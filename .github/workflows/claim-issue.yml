@@ -3,7 +3,6 @@ name: Assign Issue on Claim
 on:
   issue_comment:
     types: [created]
-concurrency: issues
 
 permissions:
   issues: write
