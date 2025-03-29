@@ -1,4 +1,4 @@
-name: Assign and Unassign Issues on Claim
+name: Perform full sync for issues and project board
 
 on: [issues, push, workflow_dispatch]
 
