@@ -104,7 +104,7 @@ with open('data/file_list.yml', 'r') as f:
         file_list[filename] = File(functions)
 
 # Limit to first 8 files for testing
-file_list = {k: file_list[k] for k in list(file_list)[:20]}
+#file_list = {k: file_list[k] for k in list(file_list)[:20]}
 
 auth = Auth.Token(FINE_TOKEN)
 g = Github(auth=auth)
