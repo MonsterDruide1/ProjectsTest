@@ -11,10 +11,13 @@ jobs:
   full-sync:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out this project
+        uses: actions/checkout@v4
       - name: Clone OdysseyDecomp
         uses: actions/checkout@v4
         with:
           repository: MonsterDruide1/OdysseyDecomp
+          path: ./OdysseyDecomp
           submodules: recursive
       - name: Set up python
         uses: actions/setup-python@v5
