@@ -49,9 +49,14 @@ class Function:
         self.lazy = lazy
     
     def get_issue_line(self):
+        try:
+            demangled_name = cxxfilt.demangle(self.name)
+        except Exception as e:
+            print(f"Failed to demangle {self.name}: {e}")
+            demangled_name = self.name + " (demangle failed)"
         return f"| " +\
                f"{'⬜' if self.status == FunctionStatus.NotDecompiled else '✅'}" +\
-               f" | `0x{self.offset:08X}` | `{cxxfilt.demangle(self.name)}`{' (lazy)' if self.lazy else ''} | {self.size}" +\
+               f" | `0x{self.offset:08X}` | `{demangled_name}`{' (lazy)' if self.lazy else ''} | {self.size}" +\
                f" |"
 
 class File:
