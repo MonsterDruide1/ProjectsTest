@@ -19,6 +19,7 @@ jobs:
           repository: MonsterDruide1/OdysseyDecomp
           path: ./OdysseyDecomp
           submodules: recursive
+          ref: file-list  # FIXME remove this!
       - name: Set up python
         uses: actions/setup-python@v5
         with:
