@@ -36,7 +36,8 @@ jobs:
           script: |
             const issueNumber = context.payload.issue.number;
             const assignees = context.payload.issue.assignees;
-            core.info(`assignees: @${assignees.length} ; @${assignees}`)
+            const mentions = assignees.map(user => `@${user.login}`).join(' ');
+            core.info(`assignees: @${assignees.length} ; @${assignees} ; @${mentions}`)
 
             if (assignees.length > 1) {
               const mentions = assignees.map(user => `@${user.login}`).join(' ');
