@@ -1,4 +1,4 @@
-name: Assign and Unassign Issues on Claim
+name: Unassign Issues on Unclaim
 
 on:
   issue_comment:
