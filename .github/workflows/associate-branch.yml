@@ -23,7 +23,7 @@ jobs:
           if [[ -n "$BRANCH" ]]; then
             echo "Sending association: $BRANCH"
             
-            curl 'https://github.com/_graphql' \
+            curl 'https://github.com/graphql' \
               -H 'accept: application/json' \
               -H "Authorization: TOKEN ${{ secrets.FINE_TOKEN }}" \
               --data-raw '{"query":"1ed695200ca0b6cac0e012fd4926b664","variables":{"baseIssueId":"I_kwDONyyOks6wU-tS","linkingIds":["MDM6UmVmMzg1MzcxNzkzOnJlZnMvaGVhZHMvcGxheWVyLWp1ZGdlLXN0YXJ0LXJpc2U="]}}'
