@@ -50,7 +50,10 @@ class Function:
     
     def get_issue_line(self):
         try:
-            demangled_name = cxxfilt.demangle(self.name)
+            name = self.name
+            if name.endswith("_0"):
+                name = name[:-2]
+            demangled_name = cxxfilt.demangle(name)
         except Exception as e:
             print(f"Failed to demangle {self.name}: {e}")
             demangled_name = self.name + " (demangle failed)"
