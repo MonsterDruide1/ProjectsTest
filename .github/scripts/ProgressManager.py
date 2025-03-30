@@ -194,11 +194,11 @@ def run_query(query): # A simple function to use requests.post to make the API c
         raise Exception("Query failed to run by returning code of {}. {}".format(request.status_code, query))
 
 def get_project_items(project_id):
-    return run_query("""
+    query = """
         {
             node(id: "PROJECT_ID") {
                 ... on ProjectV2 {
-                    items {
+                    items(first: 100, after: "AFTER") {
                         nodes {
                             id
                             title: fieldValueByName(name: "Title") {
@@ -225,11 +225,22 @@ def get_project_items(project_id):
                                 }
                             }
                         }
+                        pageInfo {
+                            endCursor
+                            hasNextPage
+                        }
                     }
                 }
             }
         }
-    """.replace("PROJECT_ID", project_id))
+    """.replace("PROJECT_ID", project_id)
+    result = run_query(query.replace(", after: \"AFTER\"", ""))
+    items = result['data']['node']['items']['nodes']
+    while result['data']['node']['items']['pageInfo']['hasNextPage']:
+        endCursor = result['data']['node']['items']['pageInfo']['endCursor']
+        result = run_query(query.replace("AFTER", endCursor))
+        items += result['data']['node']['items']['nodes']
+    return items
 
 def get_issue_id(issue_number):
     return run_query("""
@@ -280,12 +291,13 @@ def set_project_item_status(project_id, item_id, status_id, status_value_id):
 
 # get project items
 
-project_graphql = get_project_items(PROJECT_ID)
-project_items = project_graphql['data']['node']['items']['nodes']
+project_items = get_project_items(PROJECT_ID)
 
 issues_handled = set()
+print(len(project_items))
 for item in project_items:
-    if item['status']['name'] == "Done":
+    status = item['status']['name'] if item['status'] is not None else "None"
+    if status == "Done":
         continue  # ignore done items
 
     title = item['title']['text']
@@ -301,25 +313,25 @@ for item in project_items:
             issues_handled.add(item['content']['number'])
             print(f"Moving item to Done: {title}")
             if not DRY_RUN:
-                set_project_item_status(PROJECT_ID, item['id'], item['status']['field']['id'], STATUS_DONE_ID)
+                set_project_item_status(PROJECT_ID, item['id'], STATUS_ID, STATUS_DONE_ID)
             continue
 
-        if (item['status']['name'] == "In Progress") != (item['content'] is not None and item['content']['assignees']['totalCount'] > 0):
-            if item['content'] is not None and item['content']['assignees']['totalCount'] > 0:
-                print(f"Moving item to In Progress: {title}")
-                if not DRY_RUN:
-                    set_project_item_status(PROJECT_ID, item['id'], item['status']['field']['id'], STATUS_INPROGRESS_ID)
-            else:
-                print(f"Moving item to Todo: {title}")
-                if not DRY_RUN:
-                    set_project_item_status(PROJECT_ID, item['id'], item['status']['field']['id'], STATUS_TODO_ID)
+        assignees = item['content']['assignees']['totalCount'] if item['content'] is not None else 0
+        if assignees > 0 and status != "In Progress":
+            print(f"Moving item to In Progress: {title}")
+            if not DRY_RUN:
+                set_project_item_status(PROJECT_ID, item['id'], STATUS_ID, STATUS_INPROGRESS_ID)
+        elif assignees == 0 and status != "Todo":
+            print(f"Moving item to Todo: {title}")
+            if not DRY_RUN:
+                set_project_item_status(PROJECT_ID, item['id'], STATUS_ID, STATUS_TODO_ID)
 
         # item is up to date!
         issues_handled.add(item['content']['number'])
         continue
 
     # unknown item
-    print(f"Unknown item: {issue.title}")
+    print(f"Unknown item: {item.title}")
 
 for issue in repo.get_issues(state="open"):
     if label_unmanaged in issue.labels:
