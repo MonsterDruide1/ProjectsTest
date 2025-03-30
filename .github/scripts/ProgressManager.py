@@ -74,7 +74,7 @@ The following functions should be listed in this class:
 | :----: | :------ | :------- | :----------- |
 {"\n".join([f.get_issue_line() for f in self.functions])}
         """
-        if len(body > 65536):
+        if len(body) > 65536:
             body = body[:65500]
             # delete until last newline
             body = body[:body.rfind("\n")]
