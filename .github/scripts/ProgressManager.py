@@ -68,12 +68,18 @@ class File:
         return all(f.status != FunctionStatus.NotDecompiled for f in self.functions)
     
     def issue_body(self):
-        return f"""\
+        body = f"""\
 The following functions should be listed in this class:
 | status | address | function | size (bytes) |
 | :----: | :------ | :------- | :----------- |
 {"\n".join([f.get_issue_line() for f in self.functions])}
         """
+        if len(body > 65536):
+            body = body[:65500]
+            # delete until last newline
+            body = body[:body.rfind("\n")]
+            body += "\n... (truncated)"
+        return body
 
 print("Loading function CSV...")
 # offset: (status, size, name)
