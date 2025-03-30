@@ -54,12 +54,14 @@ class Function:
             if name.endswith("_0"):
                 name = name[:-2]
             demangled_name = cxxfilt.demangle(name)
+            if demangled_name != "":
+                demangled_name = "`" + demangled_name + "`"
         except Exception as e:
             print(f"Failed to demangle {self.name}: {e}")
             demangled_name = self.name + " (demangle failed)"
         return f"| " +\
                f"{'⬜' if self.status == FunctionStatus.NotDecompiled else '✅'}" +\
-               f" | `0x{self.offset:08X}` | `{demangled_name}`{' (lazy)' if self.lazy else ''} | {self.size}" +\
+               f" | `0x{self.offset:08X}` | {demangled_name}{' (lazy)' if self.lazy else ''} | {self.size}" +\
                f" |"
 
 class File:
