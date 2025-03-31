@@ -20,7 +20,6 @@ jobs:
         with:
           repository: MonsterDruide1/OdysseyDecomp
           path: ./OdysseyDecomp
-          ref: file-list  # FIXME remove this!
       - name: Set up python
         uses: actions/setup-python@v5
         with:
