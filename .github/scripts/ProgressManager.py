@@ -85,6 +85,30 @@ The following functions should be listed in this class:
             body = body[:body.rfind("\n")]
             body += "\n... (truncated)"
         return body
+    
+    def get_total_size(self):
+        return sum(f.size for f in self.functions)
+    
+    def get_total_functions(self):
+        return len(self.functions)
+    
+    def difficulty(self):
+        # 0    < X < 500  : Easy (blue - 0-20%)
+        # 500  < X < 1500 : Normal (green - 20-50 = 30%)
+        # 1500 < X < 5000 : Hard (orange - 50-80% = 30%)
+        # 5000 < X < 10000: Harder (red - 80-92 = 12%)
+        # 10000 < X       : Insane (purple, 92-100 = 8%)
+        total_size = self.get_total_size()
+        if total_size < 500:
+            return "easy"
+        elif total_size < 1500:
+            return "normal"
+        elif total_size < 5000:
+            return "hard"
+        elif total_size < 10000:
+            return "harder"
+        else:
+            return "insane"
 
 print("Loading function CSV...")
 # offset: (status, size, name)
@@ -157,6 +181,15 @@ for issue in repo.get_issues(state="open"):
             print(f"Updating issue: {issue.title}")
             if not DRY_RUN:
                 issue.edit(body=target_body)
+        target_difficulty = "difficulty:"+file_list[file_name].difficulty()
+        current_difficulties = [lab.name for lab in issue.labels if lab.name.startswith("difficulty:")]
+        if target_difficulty not in current_difficulties or len(current_difficulties) > 0:
+            print(f"Updating issue difficulty: {issue.title} -> {target_difficulty}")
+            if not DRY_RUN:
+                for lab in current_difficulties:
+                    issue.remove_from_labels(lab)
+                issue.add_to_labels(target_difficulty)
+
 
         # issue is up to date!
         files_handled.add(file_name)
