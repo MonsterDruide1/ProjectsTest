@@ -181,6 +181,7 @@ for issue in repo.get_issues(state="open"):
             print(f"Updating issue: {issue.title}")
             if not DRY_RUN:
                 issue.edit(body=target_body)
+
         target_difficulty = "difficulty:"+file_list[file_name].difficulty()
         current_difficulties = [lab.name for lab in issue.labels if lab.name.startswith("difficulty:")]
         if target_difficulty not in current_difficulties or len(current_difficulties) > 0:
@@ -189,6 +190,16 @@ for issue in repo.get_issues(state="open"):
                 for lab in current_difficulties:
                     issue.remove_from_labels(lab)
                 issue.add_to_labels(target_difficulty)
+        
+        target_good_first_issue = file_list[file_name].get_total_size() < 100
+        current_good_first_issues = "good first issue" in [lab.name for lab in issue.labels]
+        if target_good_first_issue != current_good_first_issues:
+            print(f"Updating issue good first issue: {issue.title} -> {target_good_first_issue}")
+            if not DRY_RUN:
+                if target_good_first_issue:
+                    issue.add_to_labels("good first issue")
+                else:
+                    issue.remove_from_labels("good first issue")
 
 
         # issue is up to date!
