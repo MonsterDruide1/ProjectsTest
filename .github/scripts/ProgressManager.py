@@ -193,20 +193,20 @@ for issue in repo.get_issues(state="open"):
 
         target_metadata_requests = list(current_metadata_requests)
         comments = issue.get_comments()
-        if comments.totalCount > 0:
-            last_comment = comments[-1]
-            if last_comment.body == "/request":
-                if last_comment.user.login not in target_metadata_requests:
-                    target_metadata_requests.append("@"+last_comment.user.login)
-                    print(f"Adding {last_comment.user.login} to metadata requests")
-                else:
-                    print(f"{last_comment.user.login} is already in metadata requests")
-            elif last_comment.body == "/unrequest":
-                if last_comment.user.login in target_metadata_requests:
-                    target_metadata_requests.remove("@"+last_comment.user.login)
-                    print(f"Removing {last_comment.user.login} from metadata requests")
-                else:
-                    print(f"{last_comment.user.login} is not in metadata requests")
+        #if comments.totalCount > 0:
+        last_comment = comments[-1]
+        if last_comment.body == "/request":
+            if last_comment.user.login not in target_metadata_requests:
+                target_metadata_requests.append("@"+last_comment.user.login)
+                print(f"Adding {last_comment.user.login} to metadata requests")
+            else:
+                print(f"{last_comment.user.login} is already in metadata requests")
+        elif last_comment.body == "/unrequest":
+            if last_comment.user.login in target_metadata_requests:
+                target_metadata_requests.remove("@"+last_comment.user.login)
+                print(f"Removing {last_comment.user.login} from metadata requests")
+            else:
+                print(f"{last_comment.user.login} is not in metadata requests")
         
         target_metadata = []
         if len(target_metadata_requests) > 0:
