@@ -1,6 +1,6 @@
 name: Perform full sync for issues and project board
 
-on: [issues, push, workflow_dispatch]
+on: [issues, push, workflow_dispatch, workflow_call]
 concurrency:
   group: issue-full-sync
 
