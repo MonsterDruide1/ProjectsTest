@@ -184,6 +184,7 @@ for issue in repo.get_issues(state="open"):
 
         target_difficulty = "difficulty:"+file_list[file_name].difficulty()
         current_difficulties = [lab.name for lab in issue.labels if lab.name.startswith("difficulty:")]
+        print(f"Target: {target_difficulty}, Current: {current_difficulties}")
         if target_difficulty not in current_difficulties or len(current_difficulties) > 0:
             print(f"Updating issue difficulty: {issue.title} -> {target_difficulty}")
             if not DRY_RUN:
