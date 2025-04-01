@@ -178,6 +178,8 @@ for issue in repo.get_issues(state="open"):
         if SPLIT_BODY_METADATA in current_body:
             current_body, metadata = current_body.split(SPLIT_BODY_METADATA, 1)
             for line in metadata.split("\n"):
+                if line == "":
+                    continue
                 if "This file has been requested by " in line:
                     if current_metadata_requests != []:
                         print("Multiple metadata requests found, ignoring")
@@ -221,7 +223,7 @@ for issue in repo.get_issues(state="open"):
         metadata = ""
         if len(target_metadata) > 0:
             metadata = "\n\n---\n<!--START OF METADATA-->\n" + "\n".join(target_metadata) + "\n"
-            
+
         metadata_length = len(metadata)
         if len(target_body) + metadata_length > 65536:
             target_body = target_body[:(65500 - metadata_length)]
