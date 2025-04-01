@@ -33,4 +33,4 @@ jobs:
           PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
         run: |
           cd OdysseyDecomp
-          python -u -m cProfile ../.github/scripts/ProgressManager.py
+          python -u ../.github/scripts/ProgressManager.py
