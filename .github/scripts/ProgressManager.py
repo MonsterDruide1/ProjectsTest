@@ -207,7 +207,7 @@ for issue in repo.get_issues(state="open"):
                     if not DRY_RUN:
                         comment.delete()
                 elif comment.body == "/unrequest":
-                    if comment.user.login in target_metadata_requests:
+                    if "@"+comment.user.login in target_metadata_requests:
                         target_metadata_requests.remove("@"+comment.user.login)
                         print(f"Removing {comment.user.login} from metadata requests")
                     else:
