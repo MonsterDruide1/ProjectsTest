@@ -185,7 +185,7 @@ for issue in repo.get_issues(state="open"):
                     list_of_people = line.split("This file has been requested by ")[1].split(", ")
                     for person in list_of_people:
                         if person.startswith("@"):
-                            current_metadata_requests.append(person[1:])
+                            current_metadata_requests.append(person)
                         else:
                             print(f"Found request metadata, but person is not in mention format: {person}")
                 else:
@@ -399,7 +399,6 @@ def set_project_item_status(project_id, item_id, status_id, status_value_id):
 project_items = get_project_items(PROJECT_ID)
 
 issues_handled = set()
-print(len(project_items))
 for item in project_items:
     status = item['status']['name'] if item['status'] is not None else "None"
     if status == "Done":
