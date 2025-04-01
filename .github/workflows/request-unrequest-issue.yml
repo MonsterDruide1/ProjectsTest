@@ -13,4 +13,4 @@ jobs:
   request-issue:
     runs-on: ubuntu-latest
     if: github.event.issue.pull_request == null && (startsWith(github.event.comment.body, '/request') || startsWith(github.event.comment.body, '/unrequest'))
-    uses: ./github/workflows/full-sync-issues.yml
+    uses: ./.github/workflows/full-sync-issues.yml
