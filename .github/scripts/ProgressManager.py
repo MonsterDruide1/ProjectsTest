@@ -16,6 +16,8 @@ STATUS_TODO_ID = "f75ad846"
 STATUS_INPROGRESS_ID = "47fc9ee4"
 STATUS_DONE_ID = "98236657"
 
+SPLIT_BODY_METADATA = "\n\n---\n<!--START OF METADATA-->\n"
+
 class FunctionStatus(Enum):
     Matching = 0
     NonMatchingMinor = 1
@@ -73,18 +75,12 @@ class File:
         return all(f.status != FunctionStatus.NotDecompiled for f in self.functions)
     
     def issue_body(self):
-        body = f"""\
+        return f"""\
 The following functions should be listed in this class:
 | status | address | function | size (bytes) |
 | :----: | :------ | :------- | :----------- |
 {"\n".join([f.get_issue_line() for f in self.functions])}
         """
-        if len(body) > 65536:
-            body = body[:65500]
-            # delete until last newline
-            body = body[:body.rfind("\n")]
-            body += "\n... (truncated)"
-        return body
     
     def get_total_size(self):
         return sum(f.size for f in self.functions)
@@ -177,10 +173,69 @@ for issue in repo.get_issues(state="open"):
             continue
 
         target_body = file_list[file_name].issue_body()
+        current_body = issue.body
+        current_metadata_requests = []
+        if SPLIT_BODY_METADATA in current_body:
+            current_body, metadata = current_body.split(SPLIT_BODY_METADATA, 1)
+            for line in metadata.split("\n"):
+                if "This file has been requested by " in line:
+                    if current_metadata_requests != []:
+                        print("Multiple metadata requests found, ignoring")
+                        continue
+                    list_of_people = line.split("This file has been requested by ")[1].split(", ")
+                    for person in list_of_people:
+                        if person.startswith("@"):
+                            current_metadata_requests.append(person[1:])
+                        else:
+                            print(f"Found request metadata, but person is not in mention format: {person}")
+                else:
+                    print(f"Unknown metadata line: {line}")
+
+        target_metadata_requests = list(current_metadata_requests)
+        comments = issue.get_comments()
+        if len(comments) > 0:
+            last_comment = comments[-1]
+            if last_comment.body == "/request":
+                if last_comment.user.login not in target_metadata_requests:
+                    target_metadata_requests.append("@"+last_comment.user.login)
+                    print(f"Adding {last_comment.user.login} to metadata requests")
+                else:
+                    print(f"{last_comment.user.login} is already in metadata requests")
+            elif last_comment.body == "/unrequest":
+                if last_comment.user.login in target_metadata_requests:
+                    target_metadata_requests.remove("@"+last_comment.user.login)
+                    print(f"Removing {last_comment.user.login} from metadata requests")
+                else:
+                    print(f"{last_comment.user.login} is not in metadata requests")
+        
+        target_metadata = []
+        if len(target_metadata_requests) > 0:
+            target_metadata.append("This file has been requested by " + ", ".join(target_metadata_requests))
+
+        if len(target_metadata) > 0:
+            metadata = "\n\n---\n<!--START OF METADATA-->\n" + "\n".join(target_metadata) + "\n"
+            metadata_length = len(metadata)
+            if len(target_body) + metadata_length > 65536:
+                target_body = target_body[:(65500 - metadata_length)]
+                # delete until last newline
+                target_body = target_body[:target_body.rfind("\n")]
+                target_body += "\n... (truncated)"
+            target_body += metadata
+
         if issue.body != target_body:
             print(f"Updating issue: {issue.title}")
             if not DRY_RUN:
                 issue.edit(body=target_body)
+        
+        target_requested = len(target_metadata_requests) > 0
+        current_requested = "requested" in [lab.name for lab in issue.labels]
+        if target_requested != current_requested:
+            print(f"Updating issue requested: {issue.title} -> {target_requested}")
+            if not DRY_RUN:
+                if target_requested:
+                    issue.add_to_labels("requested")
+                else:
+                    issue.remove_from_labels("requested")
 
         target_difficulty = "difficulty:"+file_list[file_name].difficulty()
         current_difficulties = [lab.name for lab in issue.labels if lab.name.startswith("difficulty:")]
