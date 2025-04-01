@@ -13,3 +13,4 @@ jobs:
   request-issue:
     if: github.event.issue.pull_request == null && (startsWith(github.event.comment.body, '/request') || startsWith(github.event.comment.body, '/unrequest'))
     uses: ./.github/workflows/full-sync-issues.yml
+    secrets: inherit
