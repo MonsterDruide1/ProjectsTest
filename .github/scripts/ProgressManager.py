@@ -193,7 +193,7 @@ for issue in repo.get_issues(state="open"):
 
         target_metadata_requests = list(current_metadata_requests)
         comments = issue.get_comments()
-        if len(comments) > 0:
+        if comments.totalCount > 0:
             last_comment = comments[-1]
             if last_comment.body == "/request":
                 if last_comment.user.login not in target_metadata_requests:
