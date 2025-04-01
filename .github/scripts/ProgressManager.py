@@ -218,15 +218,17 @@ for issue in repo.get_issues(state="open"):
         if len(target_metadata_requests) > 0:
             target_metadata.append("This file has been requested by " + ", ".join(target_metadata_requests))
 
+        metadata = ""
         if len(target_metadata) > 0:
             metadata = "\n\n---\n<!--START OF METADATA-->\n" + "\n".join(target_metadata) + "\n"
-            metadata_length = len(metadata)
-            if len(target_body) + metadata_length > 65536:
-                target_body = target_body[:(65500 - metadata_length)]
-                # delete until last newline
-                target_body = target_body[:target_body.rfind("\n")]
-                target_body += "\n... (truncated)"
-            target_body += metadata
+            
+        metadata_length = len(metadata)
+        if len(target_body) + metadata_length > 65536:
+            target_body = target_body[:(65500 - metadata_length)]
+            # delete until last newline
+            target_body = target_body[:target_body.rfind("\n")]
+            target_body += "\n... (truncated)"
+        target_body += metadata
 
         if issue.body != target_body:
             print(f"Updating issue: {issue.title}")
