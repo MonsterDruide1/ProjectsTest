@@ -1,0 +1,41 @@
+name: Assign or unassign "help needed" on comments
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  repository-projects: read
+  pull-requests: read
+
+jobs:
+  help_unhelp:
+    runs-on: ubuntu-latest
+    if: github.event.issue.pull_request == null
+    steps:
+      - name: Check comment and label accordingly
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = context.payload.comment.body.trim().toLowerCase();
+            const issueNumber = context.payload.issue.number;
+            const label = "help wanted";
+
+            if (comment.startsWith("/help")) {
+              await github.rest.issues.addLabels({
+                ...context.repo,
+                issue_number: issueNumber,
+                labels: [label]
+              });
+            } else if (comment.startsWith("/unhelp")) {
+              try {
+                await github.rest.issues.removeLabel({
+                  ...context.repo,
+                  issue_number: issueNumber,
+                  name: label
+                });
+              } catch (error) {
+                if (error.status !== 404) throw error; // Ignore if label not found
+              }
+            }
