@@ -31,7 +31,7 @@ jobs:
               console.log(`Deleted comment ID ${commentId}`);
             }
 
-            if (comment.startsWith("/help")) {
+            if (comment.startsWith("/unhelp") || comment.startsWith("/thanks")) {
               await github.rest.issues.addLabels({
                 ...context.repo,
                 issue_number: issueNumber,
