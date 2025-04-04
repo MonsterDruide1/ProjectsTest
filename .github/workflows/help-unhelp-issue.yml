@@ -25,8 +25,7 @@ jobs:
 
             async function deleteComment() {
               await github.rest.issues.deleteComment({
-                owner,
-                repo,
+                ...context.repo,
                 comment_id: commentId
               });
               console.log(`Deleted comment ID ${commentId}`);
