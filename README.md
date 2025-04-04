@@ -23,10 +23,10 @@ Command    | Alias     | Effect
 -----------|-----------|--------
 /claim     | /assign   | Assign the issue to yourself
 /unclaim   | /unassign | Remove your assignment from the issue
-/help      |           | Add ![help wanted](https://img.shields.io/github/labels/MonsterDruide1/ProjectsTest/help%20wanted?link=https%3A%2F%2Fgithub.com%2FMonsterDruide1%2FProjectsTest%2Flabels%2Fhelp%2520wanted) label
-/unhelp    | /thanks   | Remove ![help wanted](https://img.shields.io/github/labels/MonsterDruide1/ProjectsTest/help%20wanted?link=https%3A%2F%2Fgithub.com%2FMonsterDruide1%2FProjectsTest%2Flabels%2Fhelp%2520wanted) label
-/stale     |           | Add ![stale](https://img.shields.io/github/labels/MonsterDruide1/ProjectsTest/stale?link=https%3A%2F%2Fgithub.com%2FMonsterDruide1%2FProjectsTest%2Flabels%2Fstale) labelcom%2FMonsterDruide1%2FProjectsTest%2Flabels%2Fstale) label
-/unhelp    |           | Remove ![stale](https://img.shields.io/github/labels/MonsterDruide1/ProjectsTest/stale?link=https%3A%2F%2Fgithub.com%2FMonsterDruide1%2FProjectsTest%2Flabels%2Fstale) label
+/help      |           | Add https://github.com/MonsterDruide1/ProjectsTest/labels/help%20wanted label
+/unhelp    | /thanks   | Remove https://github.com/MonsterDruide1/ProjectsTest/labels/help%20wanted label
+/stale     |           | Add https://github.com/MonsterDruide1/ProjectsTest/labels/stale label
+/unhelp    |           | Remove https://github.com/MonsterDruide1/ProjectsTest/labels/stale label
 /request   |           | Add https://github.com/MonsterDruide1/ProjectsTest/labels/requested label
 /unrequest |           | Remove https://github.com/MonsterDruide1/ProjectsTest/labels/requested label
 
