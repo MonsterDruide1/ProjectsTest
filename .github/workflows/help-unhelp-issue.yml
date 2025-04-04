@@ -19,8 +19,18 @@ jobs:
         with:
           script: |
             const comment = context.payload.comment.body.trim().toLowerCase();
+            const commentId = context.payload.comment.id;
             const issueNumber = context.payload.issue.number;
             const label = "help wanted";
+
+            async function deleteComment() {
+              await github.rest.issues.deleteComment({
+                owner,
+                repo,
+                comment_id: commentId
+              });
+              console.log(`Deleted comment ID ${commentId}`);
+            }
 
             if (comment.startsWith("/help")) {
               await github.rest.issues.addLabels({
@@ -28,6 +38,8 @@ jobs:
                 issue_number: issueNumber,
                 labels: [label]
               });
+              console.log(`Added 'help needed' label to issue #${issueNumber}`);
+              await deleteComment();
             } else if (comment.startsWith("/unhelp")) {
               try {
                 await github.rest.issues.removeLabel({
@@ -35,7 +47,13 @@ jobs:
                   issue_number: issueNumber,
                   name: label
                 });
+                console.log(`Removed 'help needed' label from issue #${issueNumber}`);
               } catch (error) {
-                if (error.status !== 404) throw error; // Ignore if label not found
+                if (error.status === 404) {
+                  console.log(`Label not found on issue #${issueNumber}`);
+                } else {
+                  throw error;
+                }
               }
+              await deleteComment();
             }
